@@ -90,3 +90,6 @@ The available keyboard commands are as follows:
 As a note, displaying shadows significantly slows down rendering, so if you're
 experiencing low framerates, just kill shadows or reduce the number of lights in
 your scene.
+
+## Modified Branch for Use of M3D-VTON
+It seems that the master branch of Pyrender fails to project correctly the PIFuHD meshes to (double, as in M3D-VTON) depth maps. I had investigated the techinical reason but don't remember the detail when writing this (probably due to the projection formula of Pyrender is somewhat different with OpenGL). So I log the modified `pyrender/renderer.py` (L1151-L1195) that meeds the needs of M3D-VTON in `depth_glwin` branch. Please `git checkout depth_glwin` for more details. 
