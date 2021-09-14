@@ -1150,6 +1150,7 @@ class Renderer(object):
         depth_im = np.frombuffer(depth_buf, dtype=np.float32)
         depth_im = depth_im.reshape((height, width))
         depth_im = np.flip(depth_im, axis=0)
+        depth_glwin = np.copy(depth_im) # fyviezhao
         inf_inds = (depth_im == 1.0)
         depth_im = 2.0 * depth_im - 1.0
         z_near = scene.main_camera_node.camera.znear
@@ -1162,13 +1163,15 @@ class Renderer(object):
                                 (z_far + z_near - depth_im[noninf] *
                                 (z_far - z_near)))
         depth_im[inf_inds] = 0.0
-
+        depth_glwin[inf_inds] = 0.0 # fyviezhao
+        
         # Resize for macos if needed
         if sys.platform == 'darwin':
             depth_im = self._resize_image(depth_im)
-
+            depth_glwin = self._resize_image(depth_glwin) #fyvie
+        
         if flags & RenderFlags.DEPTH_ONLY:
-            return depth_im
+            return depth_im, depth_glwin # fyviezhao (add depth_glwin)
 
         # Read color
         if flags & RenderFlags.RGBA:
@@ -1189,7 +1192,7 @@ class Renderer(object):
         if sys.platform == 'darwin':
             color_im = self._resize_image(color_im, True)
 
-        return color_im, depth_im
+        return color_im, depth_im, depth_glwin # fyviezhao (add depth_glwin)
 
     def _resize_image(self, value, antialias=False):
         """If needed, rescale the render for MacOS."""
